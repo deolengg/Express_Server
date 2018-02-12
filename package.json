@@ -1,0 +1,23 @@
+{
+  "name": "capstoneapp",
+  "version": "1.0.0",
+  "description": "REST API for Capstone App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "karan",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.193.0",
+    "body-parser": "^1.18.2",
+    "crypto": "^1.0.1",
+    "email-verification": "^0.4.6",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.3",
+    "nodemailer": "^4.4.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.14.12"
+  }
+}
