@@ -32,7 +32,6 @@ exports.listAll = function (req, res) {
             res.send(err);
         res.json(email);
     });
-
 };
 
 exports.addUserEmail = function(req, res) {
@@ -43,7 +42,6 @@ exports.addUserEmail = function(req, res) {
     user.save(function (err, email) {
         if (err)
             res.send(err);
-
             let emailText = 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/user\/verify\/?token='+user.verification.verification_token+ '&email='+email.email+'.\n';
             console.log(emailText);
         var mailOptions = {
