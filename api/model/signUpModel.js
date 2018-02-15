@@ -13,8 +13,8 @@ var users = new Schema({
         type : String,
         required : true,
         lowercase: true,
-        //unique: true,
-        validate: [validateEmail, 'Please fill a valid email address'],
+        unique: true,
+        validate: [validateEmail, 'Please enter a valid email address'],
         max : 100
     },
     date_created : {
@@ -28,6 +28,9 @@ var users = new Schema({
         verification_token : String,
         is_verified : Boolean,
         default : false
+    },
+    recycle : {
+        is_recyclable : Boolean
     },
 });
 

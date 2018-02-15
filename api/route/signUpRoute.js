@@ -9,5 +9,8 @@ module.exports = function (app) {
 
     app.route('/user/verify')
     .get(users.verifyEmail);
+
+    app.route('/user/resend_verification')
+    .post(users.resendEmailVerification);
    
 };
