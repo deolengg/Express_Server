@@ -28,10 +28,7 @@ var users = new Schema({
         verification_token : String,
         is_verified : Boolean,
         default : false
-    },
-    recycle : {
-        is_recyclable : Boolean
-    },
+    }
 });
 
 module.exports = mongoose.model('Users', users);

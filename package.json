@@ -15,7 +15,8 @@
     "email-verification": "^0.4.6",
     "express": "^4.16.2",
     "mongoose": "^5.0.3",
-    "nodemailer": "^4.4.2"
+    "nodemailer": "^4.4.2",
+    "nodemailer-sendgrid-transport": "^0.2.0"
   },
   "devDependencies": {
     "nodemon": "^1.14.12"

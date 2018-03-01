@@ -3,36 +3,27 @@
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
-let aws = require('aws-sdk');
-
-aws.config.loadFromPath('./config.aws.json');
 
 var Users = require('../model/signUpModel');
 
 let transporter = nodemailer.createTransport({
-    SES: new aws.SES({
-        // apiVersion: '2010-12-01'
-    })
+    host: 'smtp.sendgrid.net',
+    port : 465,
+    auth: {
+    user: 'apikey',
+    pass: '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'
+  }
 });
+//got rid of AWS SES
 
-//var transporter = nodemailer.createTransport({
-//pool: true,
-//host: 'email-smtp.us-east-1.amazonaws.com',
-//port: 465,
-//secure: true, // use SSL
-//auth: {
-//user: 'AKIAIN44MTM5224DSABA',
-//pass: 'AjojW+KFGbPmmUIO69UPXs5F6eoGmOo8aD7xTDgIsKw2'
-//}
-//});
 
-exports.listAll = function (req, res) {
-    Users.find({}, function (err, email) {
-        if (err)
-            res.send(err);
-        res.json(email);
-    });
-};
+// exports.listAll = function (req, res) {
+//     Users.find({}, function (err, email) {
+//         if (err)
+//             res.send(err);
+//         res.json(email);
+//     });
+// };
 
 function generateVerificationToken() {
     return crypto.randomBytes(16).toString('hex');
@@ -59,11 +50,11 @@ exports.verifyEmail = function (req, res) {
         if (err) { res.send("Err"); return }
         if (users.length == 0) { res.send("Invalid User"); return }
         let user = users[0];
-        console.log(user.verification.verification_token);
+        //console.log(user.verification.verification_token);
         if (user.verification.verification_token == req.query.token) {
             user.verification.is_verified = true;
             user.date_verified = Date.now();
-            user.recycle.is_recyclable = false; //once registered recycleable is set to false, cannot register again
+            
             user.save();
             res.send("Verification Successful");
         } else {
@@ -77,7 +68,7 @@ function sendVerificationEmail(req, token, email, cb) {
     let emailText = 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/user\/verify\/?token=' + token + '&email=' + email + '.\n';
         //console.log(emailText);
         var mailOptions = {
-            from: 'er.jaskarandeol@gmail.com',
+            from: 'donotreply@immigration-server.com',
             to: email,
             subject: 'Account Verification Token',
             text: emailText
@@ -95,8 +86,8 @@ exports.resendEmailVerification = function (req, res) {
         console.log(users);
         let user = users[0];
 
-        console.log(req.body.email); //getting email 
-        console.log(req.body.recycle); // getting true or false
+        //console.log(req.body.email); //getting email 
+        //console.log(req.body.recycle); // getting true or false
 
         if (req.body.recycle === "true") {
             user.verification.verification_token = generateVerificationToken();
@@ -110,15 +101,9 @@ exports.resendEmailVerification = function (req, res) {
 
     });
 };
-
-
-
-//SMTP Username:
-//AKIAIN44MTM5224DSABA
-//SMTP Password:
-//AjojW+KFGbPmmUIO69UPXs5F6eoGmOo8aD7xTDgIsKw2
-
-//Server Name:	
-//email-smtp.us-east-1.amazonaws.com
-//Port:	25, 465 or 587
-//Use Transport Layer Security (TLS):	Yes
+//Server	smtp.sendgrid.net
+//Ports	
+//25, 587	(for unencrypted/TLS connections)
+//465	(for SSL connections)
+//Username	apikey
+//Password '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'
