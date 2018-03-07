@@ -28,6 +28,16 @@ var users = new Schema({
         verification_token : String,
         is_verified : Boolean,
         default : false
+    },
+    first_name : {
+        type : String,
+        lowercase: true,
+        max : 100
+    },
+    last_name : {
+        type : String,
+        lowercase: true,
+        max : 100
     }
 });
 

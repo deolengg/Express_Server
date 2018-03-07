@@ -5,6 +5,7 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 
 var Users = require('../model/signUpModel');
+var needle = require('needle');
 
 let transporter = nodemailer.createTransport({
     host: 'smtp.sendgrid.net',
@@ -68,7 +69,7 @@ function sendVerificationEmail(req, token, email, cb) {
     let emailText = 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/user\/verify\/?token=' + token + '&email=' + email + '.\n';
         //console.log(emailText);
         var mailOptions = {
-            from: 'donotreply@immigration-server.com',
+            from: 'donotreply@gmail.com',
             to: email,
             subject: 'Account Verification Token',
             text: emailText
@@ -77,6 +78,55 @@ function sendVerificationEmail(req, token, email, cb) {
             cb(err);
         });
 
+}
+
+exports.linkedinLogin = function(req,res){
+    let code = req.query.code;
+    console.log(code);
+    needle('post', 'https://www.linkedin.com/oauth/v2/accessToken', {
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: 'http://localhost:3001/login',
+        client_id: '78qzc7yyqxfn2j',
+        client_secret: 'bTCjs2Bd27XWYXbA'
+    })
+    .then(function(resp) {
+        let resp_body = resp.body;
+        if (resp_body.error) {
+            return res.status(400).send(resp_body);
+        }
+        // let token = JSON.parse(resp_body).access_token;
+        // Save access token in db
+        return getProfileFromLinkedIn(resp_body.access_token).then(profile => {
+            // save profile info in db
+            if (Users.find(profile.emailAddress) , (err, user) => {
+                    if (err || !user) {
+                        user = new Users({email: profile.emailAddress, verification: true});
+                    } else {
+                        user = user[0];
+                    }
+                    user.first_name = profile.firstName;
+                    user.last_name = profile.lastName;
+                    user.save();
+            });
+            return res.send(profile);
+        });
+    })
+    .catch(function(err) {
+        console.log(err);
+        return res.status(400).send(err);
+    });
+}
+
+function getProfileFromLinkedIn(token) {
+    return needle('get', 'https://api.linkedin.com/v1/people/~:(id,picture-url,first-name,last-name,email-address)', {format: 'json'}, {
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    }).then((resp) => {
+        console.log(resp.body);
+        return resp.body;
+    });
 }
 
 exports.resendEmailVerification = function (req, res) {
@@ -107,3 +157,4 @@ exports.resendEmailVerification = function (req, res) {
 //465	(for SSL connections)
 //Username	apikey
 //Password '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'
+

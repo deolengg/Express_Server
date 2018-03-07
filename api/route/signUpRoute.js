@@ -19,5 +19,8 @@ module.exports = function (app) {
 
     app.route('/user/resend_verification')
     .post(users.resendEmailVerification);
+
+    app.route('/login')
+    .get(users.linkedinLogin);
    
 };
