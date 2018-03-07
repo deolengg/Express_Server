@@ -69,7 +69,7 @@ function sendVerificationEmail(req, token, email, cb) {
     let emailText = 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/user\/verify\/?token=' + token + '&email=' + email + '.\n';
         //console.log(emailText);
         var mailOptions = {
-            from: 'donotreply@gmail.com',
+            from: 'donotreply@immigration-server.com',
             to: email,
             subject: 'Account Verification Token',
             text: emailText
