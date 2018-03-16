@@ -9,8 +9,8 @@ var bodyParser = require('body-parser');
 
 mongoose.Promise = global.Promise;
 
-//mongoose.connect('mongodb://localhost/register');
-mongoose.connect('mongodb://35.182.144.38/register');
+mongoose.connect('mongodb://localhost/register');
+//mongoose.connect('mongodb://35.182.144.38/register');
 app.use(bodyParser.urlencoded({extented : true}));
 app.use(bodyParser.json());
 

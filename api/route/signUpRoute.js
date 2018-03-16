@@ -22,5 +22,8 @@ module.exports = function (app) {
 
     app.route('/login')
     .get(users.linkedinLogin);
+
+    app.route('/login/facebook')
+    .get(users.facebookLogin);
    
 };
