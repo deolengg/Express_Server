@@ -15,7 +15,6 @@ let transporter = nodemailer.createTransport({
     pass: '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'
   }
 });
-//got rid of AWS SES
 
 
 // exports.listAll = function (req, res) {
@@ -205,10 +204,4 @@ exports.resendEmailVerification = function (req, res) {
 
     });
 };
-//Server	smtp.sendgrid.net
-//Ports	
-//25, 587	(for unencrypted/TLS connections)
-//465	(for SSL connections)
-//Username	apikey
-//Password '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'
 
