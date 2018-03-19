@@ -86,7 +86,7 @@ exports.linkedinLogin = function(req,res){
     needle('post', 'https://www.linkedin.com/oauth/v2/accessToken', {
         grant_type: 'authorization_code',
         code: code,
-        redirect_uri: 'http://localhost:3001/login',
+        redirect_uri: 'http://localhost:3001/login/linkedin',
         client_id: '78qzc7yyqxfn2j',
         client_secret: 'bTCjs2Bd27XWYXbA'
     })
@@ -95,7 +95,6 @@ exports.linkedinLogin = function(req,res){
         if (resp_body.error) {
             return res.status(400).send(resp_body);
         }
-        // let token = JSON.parse(resp_body).access_token;
         // Save access token in db
         return getProfileFromLinkedIn(resp_body.access_token).then(profile => {
             // save profile info in db
@@ -104,7 +103,7 @@ exports.linkedinLogin = function(req,res){
                     console.log(err);
                     throw err;
                 }
-                if (user.lenght == 0) {
+                if (user.length == 0) {
                     user = new Users({email: profile.emailAddress, verification: true});
                 } else {
                     user = user[0];
@@ -112,8 +111,9 @@ exports.linkedinLogin = function(req,res){
                 user.first_name = profile.firstName;
                 user.last_name = profile.lastName;
                 user.save();
+
+                res.send(profile);
             });
-            return res.send(profile);
         });
     })
     .catch(function(err) {
@@ -190,11 +190,8 @@ exports.resendEmailVerification = function (req, res) {
     Users.find({ email: req.body.email }, (err, users) => {
         if (err) { res.send("Err"); return }
         if (users.length == 0) { return res.status(404).send("User Not Found"); }
-        console.log(users);
+        //console.log(users);
         let user = users[0];
-
-        //console.log(req.body.email); //getting email 
-        //console.log(req.body.recycle); // getting true or false
 
         if (req.body.recycle === "true") {
             user.verification.verification_token = generateVerificationToken();

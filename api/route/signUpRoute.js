@@ -20,7 +20,7 @@ module.exports = function (app) {
     app.route('/user/resend_verification')
     .post(users.resendEmailVerification);
 
-    app.route('/login')
+    app.route('/login/linkedin')
     .get(users.linkedinLogin);
 
     app.route('/login/facebook')
