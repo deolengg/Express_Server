@@ -1,0 +1,37 @@
+[
+   {
+      "id": "LOCATION",
+      "type" : "text",
+      "format" : "address",
+      "multiple" : false,
+      "options" : ["PEARSON_TORONTO"],
+      "filter" : ["CANADA"]
+   },
+   {
+      "id" : "LANDING_DATE",
+      "type" : "text",
+      "format" : "date",
+      "multiple": false,
+      "options": ["WITHIN_1_WEEK", "WITHIN_2_WEEKS","WITHIN_3_MONTHS","WITHIN_6_MONTHS","WITHIN_YEAR", "MORE_THAN_A_YEAR"]
+   },
+   {
+      "id": "CITY_OF_STAY",
+      "type": "text",
+      "format": "city",
+      "multiple": false,
+      "options": ["WATERLOO_KITCHENER", "TORONTO", "BRAMPTON", "MISSISSAUGA"],
+      "filters": ["ONTARIO"]
+   },
+   {
+      "id": "PHONE",
+      "type": "text",
+      "format": "phone",
+      "multiple": false
+   },
+   {
+      "id": "EMAIL",
+      "type": "text",
+      "format": "email",
+      "multiple": false
+   }
+]

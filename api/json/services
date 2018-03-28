@@ -1,0 +1,13 @@
+[
+   {
+      "name" : "Real-Estate",
+      "description" : "Find a place to live",
+      "available" : true,
+      "questions": ["LOCATION", "LANDING_DATE", "CITY_OF_STAY","PHONE","EMAIL"]
+   },
+   {
+      "name":"Job Search",
+      "description": "Find work near where you live",
+      "available": false
+   }
+]

@@ -11,9 +11,7 @@ module.exports = function (app) {
 
     app.route('/user/register')
     .post(users.addUserEmail);
-        //.get(users.listAll)
         
-
     app.route('/user/verify')
     .get(users.verifyEmail);
 

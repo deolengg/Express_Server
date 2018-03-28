@@ -17,7 +17,8 @@ var services = new Schema({
     available : {
         type : Boolean,
         default : false
-    }
+    },
+    questions: []
 });
 
 module.exports = mongoose.model('Services', services);

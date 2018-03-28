@@ -9,39 +9,37 @@ var needle = require('needle');
 
 let transporter = nodemailer.createTransport({
     host: 'smtp.sendgrid.net',
-    port : 465,
+    port: 465,
     auth: {
-    user: 'apikey',
-    pass: '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'
-  }
+        user: 'apikey',
+        pass: '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'
+    }
 });
-
-
-// exports.listAll = function (req, res) {
-//     Users.find({}, function (err, email) {
-//         if (err)
-//             res.send(err);
-//         res.json(email);
-//     });
-// };
 
 function generateVerificationToken() {
     return crypto.randomBytes(16).toString('hex');
 }
 
 exports.addUserEmail = function (req, res) {
+    Users.find({ email: req.body.email }, (err, users) => {
+        if (err) { res.send("Err"); return }
+        if (users.length == 0) {
+            var user = new Users(req.body);
 
-    var user = new Users(req.body);
+            user.verification.verification_token = generateVerificationToken();
 
-    user.verification.verification_token = generateVerificationToken();
-
-    user.save(function (err, email) {
-        if (err)
-            res.send(err);
-        sendVerificationEmail(req, user.verification.verification_token, email.email, (err) => {
-            if (err) { console.log(err); return res.status(500).send({ msg: err.message }); }
-            res.status(200).send('A verification email has been sent to ' + email.email + '.');
-        });
+            user.save(function (err, email) {
+                if (err)
+                    res.send(err);
+                sendVerificationEmail(req, user.verification.verification_token, email.email, (err) => {
+                    if (err) { console.log(err); return res.status(500).send({ msg: err.message }); }
+                    res.status(200).send('A verification email has been sent to ' + email.email + '.');
+                });
+            });
+        }
+        else {
+            res.status(200).send('This email : ' + req.body.email + ' is already registered.');
+        }
     });
 };
 
@@ -65,21 +63,21 @@ exports.verifyEmail = function (req, res) {
 
 function sendVerificationEmail(req, token, email, cb) {
     let emailText = 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/user\/verify\/?token=' + token + '&email=' + email + '.\n';
-        //console.log(emailText);
-        var mailOptions = {
-            from: 'donotreply@immigration-server.com',
-            to: email,
-            subject: 'Account Verification Token',
-            text: emailText
-        };
-        transporter.sendMail(mailOptions, function (err) {
-            cb(err);
-        });
+    //console.log(emailText);
+    var mailOptions = {
+        from: 'donotreply@immigration-server.com',
+        to: email,
+        subject: 'Account Verification Token',
+        text: emailText
+    };
+    transporter.sendMail(mailOptions, function (err) {
+        cb(err);
+    });
 
 }
 
 
-exports.linkedinLogin = function(req,res){
+exports.linkedinLogin = function (req, res) {
     let code = req.query.code;
     console.log(code);
     needle('post', 'https://www.linkedin.com/oauth/v2/accessToken', {
@@ -89,40 +87,40 @@ exports.linkedinLogin = function(req,res){
         client_id: '78qzc7yyqxfn2j',
         client_secret: 'bTCjs2Bd27XWYXbA'
     })
-    .then(function(resp) {
-        let resp_body = resp.body;
-        if (resp_body.error) {
-            return res.status(400).send(resp_body);
-        }
-        // Save access token in db
-        return getProfileFromLinkedIn(resp_body.access_token).then(profile => {
-            // save profile info in db
-            Users.find({"email": profile.emailAddress} , (err, user) => {
-                if(err) {
-                    console.log(err);
-                    throw err;
-                }
-                if (user.length == 0) {
-                    user = new Users({email: profile.emailAddress, verification: true});
-                } else {
-                    user = user[0];
-                }
-                user.first_name = profile.firstName;
-                user.last_name = profile.lastName;
-                user.save();
+        .then(function (resp) {
+            let resp_body = resp.body;
+            if (resp_body.error) {
+                return res.status(400).send(resp_body);
+            }
+            // Save access token in db
+            return getProfileFromLinkedIn(resp_body.access_token).then(profile => {
+                // save profile info in db
+                Users.find({ "email": profile.emailAddress }, (err, user) => {
+                    if (err) {
+                        console.log(err);
+                        throw err;
+                    }
+                    if (user.length == 0) {
+                        user = new Users({ email: profile.emailAddress, verification: true });
+                    } else {
+                        user = user[0];
+                    }
+                    user.first_name = profile.firstName;
+                    user.last_name = profile.lastName;
+                    user.save();
 
-                res.send(profile);
+                    res.send(profile);
+                });
             });
+        })
+        .catch(function (err) {
+            console.log(err);
+            return res.status(400).send(err);
         });
-    })
-    .catch(function(err) {
-        console.log(err);
-        return res.status(400).send(err);
-    });
 }
 
 function getProfileFromLinkedIn(token) {
-    return needle('get', 'https://api.linkedin.com/v1/people/~:(id,picture-url,first-name,last-name,email-address)', {format: 'json'}, {
+    return needle('get', 'https://api.linkedin.com/v1/people/~:(id,picture-url,first-name,last-name,email-address)', { format: 'json' }, {
         headers: {
             Authorization: 'Bearer ' + token
         }
@@ -132,15 +130,15 @@ function getProfileFromLinkedIn(token) {
     });
 }
 
-exports.facebookLogin = function(req,res){
+exports.facebookLogin = function (req, res) {
     let code = req.query.code;
     console.log(code);
     needle.request('get', 'https://graph.facebook.com/v2.12/oauth/access_token', {
-        client_id:'177624063043650',
-        redirect_uri:'http://localhost:3001/login/facebook',
-        client_secret:'7804af71baef9b017416227bb1fa76f8',
-        code:code
-    }, function(err, resp) {
+        client_id: '177624063043650',
+        redirect_uri: 'http://localhost:3001/login/facebook',
+        client_secret: '7804af71baef9b017416227bb1fa76f8',
+        code: code
+    }, function (err, resp) {
         if (err) {
             console.log(err);
             return res.status(400).send(resp_body);
@@ -154,23 +152,23 @@ exports.facebookLogin = function(req,res){
         // Save access token in db
         return getProfileFromFacebook(resp_body.access_token).then(profile => {
             // save profile info in db
-            Users.find({"email": profile.email} , (err, user) => {
-                    if(err) {
-                        console.log(err);
-                        throw err;
-                    }
-                    if (user.length == 0) {
-                        user = new Users({email: profile.email, verification: true});
-                    } else {
-                        user = user[0];
-                    }
-                    user.first_name = profile.first_name;
-                    user.last_name = profile.last_name;
-                    user.save();
-                    
-                    res.send(profile);
+            Users.find({ "email": profile.email }, (err, user) => {
+                if (err) {
+                    console.log(err);
+                    throw err;
+                }
+                if (user.length == 0) {
+                    user = new Users({ email: profile.email, verification: true });
+                } else {
+                    user = user[0];
+                }
+                user.first_name = profile.first_name;
+                user.last_name = profile.last_name;
+                user.save();
+
+                res.send(profile);
             });
-            
+
         });
     });
 }

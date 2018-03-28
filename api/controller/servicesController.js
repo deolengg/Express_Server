@@ -19,7 +19,7 @@ exports.addService = function (req, res) {
         if (err)
             res.send(err);
         else {
-            res.send('Service  ' + service + ' is Added.');
+            res.send('Service Added : ' + req.body.name);
         }
     });
 };
