@@ -18,7 +18,7 @@ var services = new Schema({
         type : Boolean,
         default : false
     },
-    questions: []
+    questions: [String]
 });
 
 module.exports = mongoose.model('Services', services);

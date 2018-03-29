@@ -13,9 +13,7 @@ module.exports = function (app) {
     .get(questions.listQuestions) // simply listing all questions
     .post(questions.addQuestion); // adding question to Mongodb
 
-    app.route('/questionnaire/:service')// provding questionaire for provided services 
-    .get(questions.provideQuestionairePerService);
-    }
-
-  
+    app.route('/:service')// provding questionaire for provided services 
+    .get(questions.newProvideQuestionairePerService);
     
+}
