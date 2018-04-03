@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function (app) {
-    var questions = require('../controller/questionsController');
+    var user_data = require('../controller/userDataController');
     
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
@@ -9,11 +9,7 @@ module.exports = function (app) {
         next();
       });
       
-    app.route('/services/questionaire')
-    .get(questions.listQuestions) 
-    .post(questions.addQuestion); 
-
-    app.route('/:service')
-    .get(questions.newProvideQuestionairePerService);
+    app.route('/questionnaire/user/data')
+    .post(user_data.saveUserDataPerQuestion); 
     
 }

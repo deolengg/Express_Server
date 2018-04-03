@@ -33,5 +33,12 @@
       "type": "text",
       "format": "email",
       "multiple": false
-   }
+   },
+   {
+      "id": "FamilyComposition",
+      "type" : "text",
+      "format" : "number_of_members",
+      "multiple" : false,
+      "options" : ["1","2","3","4","5","6","7","8","9","10"]
+    }   
 ]

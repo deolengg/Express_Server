@@ -20,7 +20,7 @@ exports.addQuestion = function (req, res) {
         if (err)
             res.send(err)
         else {
-            res.send('Question Added : ' + req.body.id);
+            res.status(202).send({ Success :  'Question Accepted and Added'});
         }
     });
 };
@@ -33,7 +33,7 @@ exports.newProvideQuestionairePerService = function (req, res) {
         if (err) { console.log(err); throw err; }
         if (service.length == 1){
             service = service [0];
-            if (service.available == false) return res.send("Service Not Available");
+            if (service.available == false) return res.status(401).send({Error : 'Service Not Available' }); 
 
             console.log("This Service is Available");
             console.log(typeof service.questions); 
@@ -45,17 +45,14 @@ exports.newProvideQuestionairePerService = function (req, res) {
 
             Promise.all(questionsPromises).then(questions => {
                 res.send(questions.map(ques => {
-                    return (({id,type,format ,multiple,options,filter}) => ({id,type,format ,multiple,options,filter}))(ques);
+                    return (({id,type,format ,multiple,options,filter}) => 
+                    ({id,type,format ,multiple,options,filter}))(ques);
                 }));
             })
-            //get service.questions = [] contains all questions
-            //ID mapping
-            //take service.questions [] then go to questions schema map question.ID 
-            //return json of questions
         }
         else {
             console.log("Service Called : "+serviceName+" is Invalid");
-            return res.status(404).send("Service Not Found : "+serviceName); 
+            return res.status(404).send({Error : 'Service Not Found' }); 
         }
     });
 };

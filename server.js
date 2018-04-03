@@ -1,7 +1,7 @@
 var express = require('express'),
     app = express(),
     fs = require('fs'),
-    port = process.env.PORT || 3001;
+    port = process.env.PORT || 3002;
 
 //Require All Models
 fs.readdirSync('./api/model/').forEach(function (file) {
@@ -16,7 +16,7 @@ var bodyParser = require('body-parser');
 mongoose.Promise = global.Promise;
 
 mongoose.connect('mongodb://localhost/immigration-service');
-//mongoose.connect('mongodb://35.182.144.38/register');
+//mongoose.connect('mongodb://35.182.144.38/immigration-service');
 app.use(bodyParser.urlencoded({extented : true}));
 app.use(bodyParser.json());
 

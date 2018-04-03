@@ -5,6 +5,10 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 
 var Users = require('../model/signUpModel');
+var UserData = require('../model/userDataModel');
+var Question = require('../model/questionModel');
+var Service = require('../model/servicesListModel');
+
 var needle = require('needle');
 
 let transporter = nodemailer.createTransport({
@@ -33,12 +37,16 @@ exports.addUserEmail = function (req, res) {
                     res.send(err);
                 sendVerificationEmail(req, user.verification.verification_token, email.email, (err) => {
                     if (err) { console.log(err); return res.status(500).send({ msg: err.message }); }
-                    res.status(200).send('A verification email has been sent to ' + email.email + '.');
+                    res.status(200).send({ 
+                        'A verification email has been sent to ' : email.email 
+                    });
                 });
             });
         }
         else {
-            res.status(200).send('This email : ' + req.body.email + ' is already registered.');
+            res.status(400).send({ Error : 'Invalid Request',
+                Error : 'This email is already Registered'
+            });
         }
     });
 };
@@ -53,9 +61,9 @@ exports.verifyEmail = function (req, res) {
             user.verification.is_verified = true;
             user.date_verified = Date.now();
             user.save();
-            res.send("Verification Successful");
+            res.status(200).send({ Success : 'Verification Successful' });
         } else {
-            res.send("Invalid Token");
+            res.status(400).send({ Error : 'Invalid Token' });
         }
     });
 };
@@ -95,7 +103,7 @@ exports.linkedinLogin = function (req, res) {
             // Save access token in db
             return getProfileFromLinkedIn(resp_body.access_token).then(profile => {
                 // save profile info in db
-                Users.find({ "email": profile.emailAddress }, (err, user) => {
+                Users.find({ "email" : profile.emailAddress }, (err, user) => {
                     if (err) {
                         console.log(err);
                         throw err;
@@ -108,8 +116,8 @@ exports.linkedinLogin = function (req, res) {
                     user.first_name = profile.firstName;
                     user.last_name = profile.lastName;
                     user.save();
-
-                    res.send(profile);
+                
+                    res.send(profile);// to be removed later on
                 });
             });
         })
@@ -120,7 +128,7 @@ exports.linkedinLogin = function (req, res) {
 }
 
 function getProfileFromLinkedIn(token) {
-    return needle('get', 'https://api.linkedin.com/v1/people/~:(id,picture-url,first-name,last-name,email-address)', { format: 'json' }, {
+    return needle('get', 'https://api.linkedin.com/v1/people/~:(id,picture-url,first-name,last-name,email-address,location)', { format: 'json' }, {
         headers: {
             Authorization: 'Bearer ' + token
         }
@@ -166,7 +174,9 @@ exports.facebookLogin = function (req, res) {
                 user.last_name = profile.last_name;
                 user.save();
 
-                res.send(profile);
+
+
+                res.send(profile);//to be removed later on
             });
 
         });
@@ -186,7 +196,7 @@ function getProfileFromFacebook(token) {
 exports.resendEmailVerification = function (req, res) {
     Users.find({ email: req.body.email }, (err, users) => {
         if (err) { res.send("Err"); return }
-        if (users.length == 0) { return res.status(404).send("User Not Found"); }
+        if (users.length == 0) { return res.status(404).send({Error : 'User Not Found'}); }
         //console.log(users);
         let user = users[0];
 
