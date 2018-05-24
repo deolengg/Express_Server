@@ -1,7 +1,7 @@
 var express = require('express'),
     app = express(),
     fs = require('fs'),
-    port = process.env.PORT || 3002;
+    port = process.env.PORT || 3001;
 
 //Require All Models
 fs.readdirSync('./api/model/').forEach(function (file) {
@@ -12,6 +12,8 @@ fs.readdirSync('./api/model/').forEach(function (file) {
 
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+
+
 
 mongoose.Promise = global.Promise;
 

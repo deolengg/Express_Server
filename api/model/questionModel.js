@@ -15,6 +15,7 @@ function validPhone(phone){
 
 var questions = new Schema({
     id : { type : String, required : true},
+    name : String,
     type : String,
     format : String,
     multiple : { type : Boolean, default : false},

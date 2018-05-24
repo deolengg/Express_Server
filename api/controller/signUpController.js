@@ -9,6 +9,8 @@ var UserData = require('../model/userDataModel');
 var Question = require('../model/questionModel');
 var Service = require('../model/servicesListModel');
 
+var path = require('path');
+
 var needle = require('needle');
 
 let transporter = nodemailer.createTransport({
@@ -16,7 +18,7 @@ let transporter = nodemailer.createTransport({
     port: 465,
     auth: {
         user: 'apikey',
-        pass: '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'
+        pass: 'Your Key'
     }
 });
 
@@ -61,7 +63,7 @@ exports.verifyEmail = function (req, res) {
             user.verification.is_verified = true;
             user.date_verified = Date.now();
             user.save();
-            res.status(200).send({ Success : 'Verification Successful' });
+            res.redirect('http://localhost:3000/thankyou');
         } else {
             res.status(400).send({ Error : 'Invalid Token' });
         }
@@ -73,7 +75,7 @@ function sendVerificationEmail(req, token, email, cb) {
     let emailText = 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/user\/verify\/?token=' + token + '&email=' + email + '.\n';
     //console.log(emailText);
     var mailOptions = {
-        from: 'donotreply@immigration-server.com',
+        from: 'donotreply@Express-Server.com',
         to: email,
         subject: 'Account Verification Token',
         text: emailText
@@ -92,8 +94,8 @@ exports.linkedinLogin = function (req, res) {
         grant_type: 'authorization_code',
         code: code,
         redirect_uri: 'http://localhost:3001/login/linkedin',
-        client_id: '78qzc7yyqxfn2j',
-        client_secret: 'bTCjs2Bd27XWYXbA'
+        client_id: 'Your ID',
+        client_secret: 'Your Key'
     })
         .then(function (resp) {
             let resp_body = resp.body;
@@ -117,7 +119,10 @@ exports.linkedinLogin = function (req, res) {
                     user.last_name = profile.lastName;
                     user.save();
                 
-                    res.send(profile);// to be removed later on
+                    res.sendFile(path.resolve('./public/index.html'));
+                    // res.redirect(url.format({
+                    //     pathname:"/login",
+                    // }))
                 });
             });
         })
@@ -142,9 +147,9 @@ exports.facebookLogin = function (req, res) {
     let code = req.query.code;
     console.log(code);
     needle.request('get', 'https://graph.facebook.com/v2.12/oauth/access_token', {
-        client_id: '177624063043650',
+        client_id: 'Your ID',
         redirect_uri: 'http://localhost:3001/login/facebook',
-        client_secret: '7804af71baef9b017416227bb1fa76f8',
+        client_secret: 'Your Key',
         code: code
     }, function (err, resp) {
         if (err) {
@@ -174,9 +179,7 @@ exports.facebookLogin = function (req, res) {
                 user.last_name = profile.last_name;
                 user.save();
 
-
-
-                res.send(profile);//to be removed later on
+                res.status(202).end();
             });
 
         });

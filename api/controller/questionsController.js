@@ -48,8 +48,8 @@ exports.provideQuestionairePerService = function (req, res) {
 
             Promise.all(questionsPromises).then(questions => {
                 res.send(questions.map(ques => {
-                    return (({ id, type, format, multiple, options, filter }) =>
-                        ({ id, type, format, multiple, options, filter }))(ques);
+                    return (({ id, name, type, format, multiple, options, filter }) =>
+                        ({ id, name,type, format, multiple, options, filter }))(ques);
                 }));
             })
         }
